@@ -6,9 +6,16 @@ ARG IMAGE_NAME=openjdk
 # Change Open JDK Version Here
 ARG IMAGE_TAG=8-jre
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
-ARG MAINTAINER="Apache NiFi <dev@nifi.apache.org>"
-LABEL maintainer="${MAINTAINER}"
-LABEL site="https://nifi.apache.org"
+
+ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
+ARG OSN_NAME="NiFi_JDK11"
+ARG OSN_VERSION="0.1"
+ARG OSN_SITE="https://github.com/TassoneSE"
+
+LABEL maintainer="${MAINTAINER}" \
+      name="${NAME}" \
+      version="${OSN_VERSION}" \
+      site="${OSN_SITE}"
 
 ARG UID=1000
 ARG GID=1000
