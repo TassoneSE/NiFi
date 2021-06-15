@@ -12,15 +12,15 @@ ARG OSN_NAME="NiFi_JDK11"
 ARG OSN_VERSION="0.1"
 ARG OSN_SITE="https://github.com/TassoneSE"
 
-LABEL maintainer="${MAINTAINER}" \
-      name="${NAME}" \
+LABEL maintainer="${OSN_MAINTAINER}" \
+      name="${OSN_NAME}" \
       version="${OSN_VERSION}" \
       site="${OSN_SITE}"
 
 ARG UID=1000
 ARG GID=1000
 # Change NiFi Version Here
-ARG NIFI_VERSION=1.13.4
+ARG NIFI_VERSION=1.14.0
 ARG BASE_URL=https://archive.apache.org/dist
 ARG MIRROR_BASE_URL=${MIRROR_BASE_URL:-${BASE_URL}}
 ARG NIFI_BINARY_PATH=${NIFI_BINARY_PATH:-/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.zip}
