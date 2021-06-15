@@ -45,7 +45,7 @@ RUN groupadd -g ${GID} nifi || groupmod -n nifi `getent group ${GID} | cut -d: -
     && apt-get install -y jq xmlstarlet procps
     
 # OpenSHift UPDATE: Do not run as nifi
-#USER nifi
+USER nifi
 
 # Download, validate, and expand Apache NiFi Toolkit binary.
 RUN curl -fSL ${MIRROR_BASE_URL}/${NIFI_TOOLKIT_BINARY_PATH} -o ${NIFI_BASE_DIR}/nifi-toolkit-${NIFI_VERSION}-bin.zip \
@@ -96,7 +96,7 @@ WORKDIR ${NIFI_HOME}
 # Also we need to use relative path, because the exec form does not invoke a command shell,
 # thus normal shell processing does not happen:
 # https://docs.docker.com/engine/reference/builder/#exec-form-entrypoint-example
-#ENTRYPOINT ["../scripts/start.sh"]
+ENTRYPOINT ["../scripts/start.sh"]
 
 # OpenSHift UPDATE: make new DIR 'nifi-temp' and copy over conf
 # This is due to how the OpenShift Persistent Volume works
@@ -104,4 +104,4 @@ WORKDIR ${NIFI_HOME}
 #RUN chmod -R a+rwx nifi-temp/conf
 
 # kick off the custom start script
-ENTRYPOINT ["sh", "../scripts/start-openshift-nifi.sh"]
+#ENTRYPOINT ["sh", "../scripts/start-openshift-nifi.sh"]
