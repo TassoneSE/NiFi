@@ -1,33 +1,26 @@
 ## The following has been modified from https://github.com/apache/nifi.git
 # The following changes have been made to allow apache/nifi work perfectly with OpenShift
-# Based on version 1.14.0
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements. See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership. The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License. You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied. See the License for the
-# specific language governing permissions and limitations
-# under the License.
-#
+# This makes a copy of the conf DIR, then copies it back once OpenShift creates a persistent volume.
+#     More info: https://issues.apache.org/jira/browse/NIFI-6484
+# We have also allowed docker to create this image as root and not let user 'nifi' have any involvement
+
 ARG IMAGE_NAME=openjdk
-ARG IMAGE_TAG=8-jre
+ARG IMAGE_TAG=11
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
-ARG MAINTAINER="Apache NiFi <dev@nifi.apache.org>"
-LABEL maintainer="${MAINTAINER}"
-LABEL site="https://nifi.apache.org"
+
+ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
+ARG OSN_NAME="OpenShift_NiFi"
+ARG OSN_VERSION="1.0"
+ARG OSN_SITE="https://github.com/TassoneSE"
+
+LABEL maintainer="${MAINTAINER}" \
+      name="${NAME}" \
+      version="${OSN_VERSION}" \
+      site="${OSN_SITE}"
 
 ARG UID=1000
 ARG GID=1000
-ARG NIFI_VERSION=1.14.0
+ARG NIFI_VERSION=1.11.4
 ARG BASE_URL=https://archive.apache.org/dist
 ARG MIRROR_BASE_URL=${MIRROR_BASE_URL:-${BASE_URL}}
 ARG NIFI_BINARY_PATH=${NIFI_BINARY_PATH:-/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.zip}
@@ -40,6 +33,8 @@ ENV NIFI_TOOLKIT_HOME ${NIFI_BASE_DIR}/nifi-toolkit-current
 ENV NIFI_PID_DIR=${NIFI_HOME}/run
 ENV NIFI_LOG_DIR=${NIFI_HOME}/logs
 
+
+# OpenSHift UPDATE: git folder sh now has a new ENTRYPOINT script
 ADD sh/ ${NIFI_BASE_DIR}/scripts/
 RUN chmod -R +x ${NIFI_BASE_DIR}/scripts/*.sh
 
@@ -50,8 +45,9 @@ RUN groupadd -g ${GID} nifi || groupmod -n nifi `getent group ${GID} | cut -d: -
     && chown -R nifi:nifi ${NIFI_BASE_DIR} \
     && apt-get update \
     && apt-get install -y jq xmlstarlet procps
-
-USER nifi
+    
+# OpenSHift UPDATE: Do not run as nifi
+#USER nifi
 
 # Download, validate, and expand Apache NiFi Toolkit binary.
 RUN curl -fSL ${MIRROR_BASE_URL}/${NIFI_TOOLKIT_BINARY_PATH} -o ${NIFI_BASE_DIR}/nifi-toolkit-${NIFI_VERSION}-bin.zip \
@@ -75,6 +71,7 @@ RUN curl -fSL ${MIRROR_BASE_URL}/${NIFI_BINARY_PATH} -o ${NIFI_BASE_DIR}/nifi-${
     && mkdir -p ${NIFI_HOME}/state \
     && mkdir -p ${NIFI_LOG_DIR} \
     && ln -s ${NIFI_HOME} ${NIFI_BASE_DIR}/nifi-${NIFI_VERSION}
+    
 
 VOLUME ${NIFI_LOG_DIR} \
        ${NIFI_HOME}/conf \
@@ -101,4 +98,12 @@ WORKDIR ${NIFI_HOME}
 # Also we need to use relative path, because the exec form does not invoke a command shell,
 # thus normal shell processing does not happen:
 # https://docs.docker.com/engine/reference/builder/#exec-form-entrypoint-example
-ENTRYPOINT ["../scripts/start.sh"]
+#ENTRYPOINT ["../scripts/start.sh"]
+
+# OpenSHift UPDATE: make new DIR 'nifi-temp' and copy over conf
+# This is due to how the OpenShift Persistent Volume works
+RUN mkdir nifi-temp && cp -a conf nifi-temp/conf
+RUN chmod -R a+rwx nifi-temp/conf
+
+# kick off the custom start script
+ENTRYPOINT ["sh", "../scripts/start-openshift-nifi.sh"]
