@@ -1,4 +1,9 @@
+## The following has been modified from https://github.com/apache/nifi.git
+# The following changes have been made to allow apache/nifi work perfectly with OpenShift
+# Based on version 1.14.0
+
 ARG IMAGE_NAME=openjdk
+# Change Open JDK Version Here
 ARG IMAGE_TAG=8-jre
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 ARG MAINTAINER="Apache NiFi <dev@nifi.apache.org>"
@@ -7,6 +12,7 @@ LABEL site="https://nifi.apache.org"
 
 ARG UID=1000
 ARG GID=1000
+# Change NiFi Version Here
 ARG NIFI_VERSION=1.14.0
 ARG BASE_URL=https://archive.apache.org/dist
 ARG MIRROR_BASE_URL=${MIRROR_BASE_URL:-${BASE_URL}}
@@ -81,4 +87,15 @@ WORKDIR ${NIFI_HOME}
 # Also we need to use relative path, because the exec form does not invoke a command shell,
 # thus normal shell processing does not happen:
 # https://docs.docker.com/engine/reference/builder/#exec-form-entrypoint-example
-ENTRYPOINT ["../scripts/start.sh"]
+# ChangeL Original Entrypoint
+#ENTRYPOINT ["../scripts/start.sh"]
+
+
+# OpenSHift UPDATE: make new DIR 'nifi-temp' and copy over conf
+# This is due to how the OpenShift Persistent Volume works
+# https://docs.openshift.com/enterprise/3.2/creating_images/guidelines.html
+RUN chgrp -R 0 ${NIFI_BASE_DIR} \
+    && chmod -R g+rwX ${NIFI_BASE_DIR}
+
+# kick off the custom start script
+ENTRYPOINT ["sh", "../scripts/start-openshift-nifi.sh"]
