@@ -1,20 +1,18 @@
 ## The following has been modified from https://github.com/apache/nifi.git
 # The following changes have been made to allow apache/nifi work perfectly with OpenShift
-# This makes a copy of the conf DIR, then copies it back once OpenShift creates a persistent volume.
-#     More info: https://issues.apache.org/jira/browse/NIFI-6484
 # We have also allowed docker to create this image as root and not let user 'nifi' have any involvement
 
 ARG IMAGE_NAME=openjdk
-ARG IMAGE_TAG=11
+ARG IMAGE_TAG=8
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
-ARG OSN_NAME="OpenShift_NiFi"
-ARG OSN_VERSION="1.0"
+ARG OSN_NAME="NiFi_JDK11"
+ARG OSN_VERSION="0.1"
 ARG OSN_SITE="https://github.com/TassoneSE"
 
-LABEL maintainer="${MAINTAINER}" \
-      name="${NAME}" \
+LABEL maintainer="${OSN_MAINTAINER}" \
+      name="${OSN_NAME}" \
       version="${OSN_VERSION}" \
       site="${OSN_SITE}"
 
@@ -102,8 +100,8 @@ WORKDIR ${NIFI_HOME}
 
 # OpenSHift UPDATE: make new DIR 'nifi-temp' and copy over conf
 # This is due to how the OpenShift Persistent Volume works
-RUN mkdir nifi-temp && cp -a conf nifi-temp/conf
-RUN chmod -R a+rwx nifi-temp/conf
+#RUN mkdir nifi-temp && cp -a conf nifi-temp/conf
+#RUN chmod -R a+rwx nifi-temp/conf
 
 # kick off the custom start script
 ENTRYPOINT ["sh", "../scripts/start-openshift-nifi.sh"]
