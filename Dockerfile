@@ -1,25 +1,32 @@
 ## The following has been modified from https://github.com/apache/nifi.git
 # The following changes have been made to allow apache/nifi work perfectly with OpenShift
 # Based on version 1.14.0
-
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements. See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership. The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License. You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
 ARG IMAGE_NAME=openjdk
-# Change Open JDK Version Here
 ARG IMAGE_TAG=8-jre
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
-
-#ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
-#ARG OSN_NAME="NiFi_JDK11"
-#ARG OSN_VERSION="0.1"
-#ARG OSN_SITE="https://github.com/TassoneSE"
-
-#LABEL maintainer="${OSN_MAINTAINER}" \
-#      name="${OSN_NAME}" \
-#      version="${OSN_VERSION}" \
-#      site="${OSN_SITE}"
+ARG MAINTAINER="Apache NiFi <dev@nifi.apache.org>"
+LABEL maintainer="${MAINTAINER}"
+LABEL site="https://nifi.apache.org"
 
 ARG UID=1000
 ARG GID=1000
-# Change NiFi Version Here
 ARG NIFI_VERSION=1.14.0
 ARG BASE_URL=https://archive.apache.org/dist
 ARG MIRROR_BASE_URL=${MIRROR_BASE_URL:-${BASE_URL}}
@@ -94,15 +101,4 @@ WORKDIR ${NIFI_HOME}
 # Also we need to use relative path, because the exec form does not invoke a command shell,
 # thus normal shell processing does not happen:
 # https://docs.docker.com/engine/reference/builder/#exec-form-entrypoint-example
-# ChangeL Original Entrypoint
-#ENTRYPOINT ["../scripts/start.sh"]
-
-
-# OpenSHift UPDATE: make new DIR 'nifi-temp' and copy over conf
-# This is due to how the OpenShift Persistent Volume works
-# https://docs.openshift.com/enterprise/3.2/creating_images/guidelines.html
-RUN chgrp -R 0 ${NIFI_BASE_DIR} \
-    && chmod -R g+rwX ${NIFI_BASE_DIR}
-
-# kick off the custom start script
-ENTRYPOINT ["sh", "../scripts/start-openshift-nifi.sh"]
+ENTRYPOINT ["../scripts/start.sh"]
