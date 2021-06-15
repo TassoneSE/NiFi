@@ -7,15 +7,15 @@ ARG IMAGE_NAME=openjdk
 ARG IMAGE_TAG=8-jre
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
-ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
-ARG OSN_NAME="NiFi_JDK11"
-ARG OSN_VERSION="0.1"
-ARG OSN_SITE="https://github.com/TassoneSE"
+#ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
+#ARG OSN_NAME="NiFi_JDK11"
+#ARG OSN_VERSION="0.1"
+#ARG OSN_SITE="https://github.com/TassoneSE"
 
-LABEL maintainer="${OSN_MAINTAINER}" \
-      name="${OSN_NAME}" \
-      version="${OSN_VERSION}" \
-      site="${OSN_SITE}"
+#LABEL maintainer="${OSN_MAINTAINER}" \
+#      name="${OSN_NAME}" \
+#      version="${OSN_VERSION}" \
+#      site="${OSN_SITE}"
 
 ARG UID=1000
 ARG GID=1000
