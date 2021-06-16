@@ -26,13 +26,19 @@ ARG NIFI_TOOLKIT_BINARY_PATH=${NIFI_TOOLKIT_BINARY_PATH:-/nifi/${NIFI_VERSION}/n
 
 ENV NIFI_BASE_DIR=/opt/nifi
 ENV NIFI_HOME ${NIFI_BASE_DIR}/nifi-current
-ENV NIFI_TOOLKIT_HOME ${NIFI_BASE_DIR}/nifi-toolkit-current
+ENV NIFI_TOOLKIT_
+${NIFI_BASE_DIR}/nifi-toolkit-current
 
 ENV NIFI_PID_DIR=${NIFI_HOME}/run
 ENV NIFI_LOG_DIR=${NIFI_HOME}/logs
 
 
-# OpenSHift UPDATE: git folder sh now has a new ENTRYPOINT script
+# OpenSHift UPDATE:
+# https://docs.openshift.com/enterprise/3.2/creating_images/guidelines.html
+RUN yum -y install nss_wrapper gettext
+
+
+
 ADD sh/ ${NIFI_BASE_DIR}/scripts/
 RUN chmod -R +x ${NIFI_BASE_DIR}/scripts/*.sh
 
@@ -91,8 +97,8 @@ WORKDIR ${NIFI_HOME}
 # OpenShift Group 0
 #RUN chmod -R a+rwx /opt/nifi
 
-RUN chgrp -R 0 /opt/nifi \
-    && chmod -R g+rwX /opt/nifi
+RUN chgrp -R 0 /opt/nifi && \
+    chmod -R g=u /opt/nifi
 
 # Apply configuration and start NiFi
 #
