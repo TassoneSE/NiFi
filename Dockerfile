@@ -3,7 +3,7 @@
 # We have also allowed docker to create this image as root and not let user 'nifi' have any involvement
 
 ARG IMAGE_NAME=openjdk
-ARG IMAGE_TAG=8
+ARG IMAGE_TAG=11
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
