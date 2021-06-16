@@ -1,2 +1,2 @@
-# NiFi_JDK11
-NiFi Running on JDK 11
+# NiFi
+Copy of apache nifi with a couple of modes for it to work with OpenShift.
