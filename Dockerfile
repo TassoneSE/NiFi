@@ -95,7 +95,9 @@ USER root
 
 # OpenSHift UPDATE: https://docs.openshift.com/container-platform/4.7/openshift_images/create-images.html
 RUN chgrp -R 0 /opt/nifi && \
-    chmod -R g=u /opt/nifi
+    chmod -R a+rwx /opt/nifi
+    
+#    chmod -R g=u /opt/nifi
 
 USER nifi
 
