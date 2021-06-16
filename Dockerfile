@@ -36,10 +36,6 @@ ENV NIFI_LOG_DIR=${NIFI_HOME}/logs
 ADD sh/ ${NIFI_BASE_DIR}/scripts/
 RUN chmod -R +x ${NIFI_BASE_DIR}/scripts/*.sh
 
-# OpenShift Group 0
-RUN chgrp -R 0 ${NIFI_BASE_DIR} \
-    && chmod -R g+rwX ${NIFI_BASE_DIR}
-
 # Setup NiFi user and create necessary directories
 RUN groupadd -g ${GID} nifi || groupmod -n nifi `getent group ${GID} | cut -d: -f1` \
     && useradd --shell /bin/bash -u ${UID} -g ${GID} -m nifi \
@@ -91,6 +87,10 @@ RUN echo "#!/bin/sh\n" > $NIFI_HOME/bin/nifi-env.sh
 EXPOSE 8080 8443 10000 8000
 
 WORKDIR ${NIFI_HOME}
+
+# OpenShift Group 0
+RUN chgrp -R 0 ${NIFI_BASE_DIR} \
+    && chmod -R g+rwX ${NIFI_BASE_DIR}
 
 # Apply configuration and start NiFi
 #
