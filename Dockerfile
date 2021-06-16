@@ -3,7 +3,7 @@
 # We have also allowed docker to create this image as root and not let user 'nifi' have any involvement
 
 ARG IMAGE_NAME=openjdk
-ARG IMAGE_TAG=11
+ARG IMAGE_TAG=8
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
@@ -36,6 +36,10 @@ ENV NIFI_LOG_DIR=${NIFI_HOME}/logs
 ADD sh/ ${NIFI_BASE_DIR}/scripts/
 RUN chmod -R +x ${NIFI_BASE_DIR}/scripts/*.sh
 
+# OpenShift Group 0
+RUN chgrp -R 0 ${NIFI_BASE_DIR} \
+    && chmod -R g+rwX ${NIFI_BASE_DIR}
+
 # Setup NiFi user and create necessary directories
 RUN groupadd -g ${GID} nifi || groupmod -n nifi `getent group ${GID} | cut -d: -f1` \
     && useradd --shell /bin/bash -u ${UID} -g ${GID} -m nifi \
@@ -44,6 +48,7 @@ RUN groupadd -g ${GID} nifi || groupmod -n nifi `getent group ${GID} | cut -d: -
     && apt-get update \
     && apt-get install -y jq xmlstarlet procps
     
+   
 # OpenSHift UPDATE: Do not run as nifi
 USER nifi
 
