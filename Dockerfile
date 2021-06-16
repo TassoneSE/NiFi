@@ -7,7 +7,7 @@ ARG IMAGE_TAG=8
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
-ARG OSN_NAME="NiFi_JDK11"
+ARG OSN_NAME="NiFi"
 ARG OSN_VERSION="0.1"
 ARG OSN_SITE="https://github.com/TassoneSE"
 
