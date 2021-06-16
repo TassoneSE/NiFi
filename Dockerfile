@@ -90,8 +90,10 @@ RUN echo "#!/bin/sh\n" > $NIFI_HOME/bin/nifi-env.sh
 # Web HTTP(s) & Socket Site-to-Site Ports
 EXPOSE 8080 8443 10000 8000
 
-USER 1000
-# OpenSHift UPDATE:
+# OpenShift Update; Re-do
+USER root
+
+# OpenSHift UPDATE: https://docs.openshift.com/container-platform/4.7/openshift_images/create-images.html
 RUN chgrp -R 0 /opt/nifi && \
     chmod -R g=u /opt/nifi
 
