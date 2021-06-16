@@ -46,10 +46,6 @@ RUN groupadd -g ${GID} nifi || groupmod -n nifi `getent group ${GID} | cut -d: -
     && apt-get update \
     && apt-get install -y jq xmlstarlet procps
 
-# OpenSHift UPDATE:
-RUN chgrp -R 0 /opt/nifi && \
-    chmod -R g=u /opt/nifi
-
 USER nifi
 
 # Download, validate, and expand Apache NiFi Toolkit binary.
