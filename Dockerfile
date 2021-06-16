@@ -89,8 +89,7 @@ EXPOSE 8080 8443 10000 8000
 WORKDIR ${NIFI_HOME}
 
 # OpenShift Group 0
-RUN chgrp -R 0 ${NIFI_BASE_DIR} \
-    && chmod -R g+rwX ${NIFI_BASE_DIR}
+
 
 # Apply configuration and start NiFi
 #
@@ -101,12 +100,15 @@ RUN chgrp -R 0 ${NIFI_BASE_DIR} \
 # Also we need to use relative path, because the exec form does not invoke a command shell,
 # thus normal shell processing does not happen:
 # https://docs.docker.com/engine/reference/builder/#exec-form-entrypoint-example
-ENTRYPOINT ["../scripts/start.sh"]
+#ENTRYPOINT ["../scripts/start.sh"]
 
 # OpenSHift UPDATE: make new DIR 'nifi-temp' and copy over conf
 # This is due to how the OpenShift Persistent Volume works
-#RUN mkdir nifi-temp && cp -a conf nifi-temp/conf
-#RUN chmod -R a+rwx nifi-temp/conf
+RUN mkdir nifi-temp && cp -a conf nifi-temp/conf
+RUN chmod -R a+rwx nifi-temp/conf
+
+RUN chgrp -R 0 ${NIFI_BASE_DIR} \
+    && chmod -R g+rwX ${NIFI_BASE_DIR}
 
 # kick off the custom start script
-#ENTRYPOINT ["sh", "../scripts/start-openshift-nifi.sh"]
+ENTRYPOINT ["sh", "../scripts/start-openshift-nifi.sh"]
