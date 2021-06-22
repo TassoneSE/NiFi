@@ -3,7 +3,7 @@
 # We have also allowed docker to create this image as root and not let user 'nifi' have any involvement
 
 ARG IMAGE_NAME=openjdk
-ARG IMAGE_TAG=8
+ARG IMAGE_TAG=11
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 ARG OSN_MAINTAINER="C Tassone <tassone.se@gmail.com>" 
@@ -18,7 +18,7 @@ LABEL maintainer="${OSN_MAINTAINER}" \
 
 ARG UID=1000
 ARG GID=1000
-ARG NIFI_VERSION=1.11.4
+ARG NIFI_VERSION=1.13.2
 ARG BASE_URL=https://archive.apache.org/dist
 ARG MIRROR_BASE_URL=${MIRROR_BASE_URL:-${BASE_URL}}
 ARG NIFI_BINARY_PATH=${NIFI_BINARY_PATH:-/nifi/${NIFI_VERSION}/nifi-${NIFI_VERSION}-bin.zip}
@@ -87,11 +87,11 @@ RUN echo "#!/bin/sh\n" > $NIFI_HOME/bin/nifi-env.sh
 EXPOSE 8080 8443 10000 8000
 
 # OpenShift Update; Re-do
-USER root
+#USER root
 
 # OpenSHift UPDATE: https://docs.openshift.com/container-platform/4.7/openshift_images/create-images.html
-RUN chgrp -R 0 /opt/nifi && \
-    chmod -R a+rwx /opt/nifi
+# RUN chgrp -R 0 /opt/nifi && \
+#    chmod -R a+rwx /opt/nifi
     
 #    chmod -R g=u /opt/nifi
 
